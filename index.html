@@ -1,0 +1,262 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="color-scheme" content="dark">
+<title>For Irdyna, the constellation of us</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,500;1,400;1,500&family=Pinyon+Script&display=swap">
+<style>
+:root{
+  color-scheme:dark;
+  --night1:#0a0615; --night2:#1a0e30; --star:#ffd98a; --rose:#ff8fb0; --lav:#b9a6ff; --ink:#fff3f6; --soft:#c9b5d9;
+  box-sizing:border-box;
+  padding-top:env(safe-area-inset-top,0px); padding-bottom:env(safe-area-inset-bottom,0px);
+}
+*{box-sizing:border-box}
+html,body{height:100%;margin:0;overflow:hidden}
+body{background:
+  radial-gradient(55% 40% at 22% 18%,rgba(255,120,170,.17),transparent),
+  radial-gradient(60% 45% at 82% 72%,rgba(120,90,255,.2),transparent),
+  linear-gradient(var(--night1),var(--night2));
+  color:var(--ink);font-family:"Cormorant Garamond",Georgia,"Times New Roman",serif;font-size:20px;line-height:1.5;
+  -webkit-user-select:none;user-select:none;touch-action:manipulation}
+.script{font-family:"Pinyon Script","Snell Roundhand","Apple Chancery",cursive;font-weight:400}
+#sky{position:fixed;inset:0;z-index:0}
+#top{position:fixed;left:0;right:0;top:0;z-index:1;text-align:center;padding:calc(env(safe-area-inset-top,0px) + 10px) 0 0;font-size:34px;color:var(--rose);pointer-events:none;text-shadow:0 0 18px rgba(255,143,176,.5)}
+#hud{position:fixed;left:0;right:0;bottom:0;z-index:1;text-align:center;padding:0 22px calc(env(safe-area-inset-bottom,0px) + 7vh);pointer-events:none;transition:opacity .8s}
+#hud.off{opacity:0}
+#dots{display:flex;justify-content:center;gap:7px;margin-bottom:16px}
+#dots i{width:6px;height:6px;border-radius:50%;background:rgba(255,255,255,.2);transition:background .5s,box-shadow .5s}
+#dots i.on{background:var(--star);box-shadow:0 0 10px var(--star)}
+#cap{margin:0 auto;max-width:560px;min-height:3.2em;font-style:italic;font-size:clamp(24px,6vw,34px);line-height:1.25;transition:opacity .5s;text-shadow:0 2px 20px rgba(0,0,0,.6)}
+#fin{position:fixed;left:50%;bottom:0;z-index:2;width:min(660px,100%);max-height:54vh;overflow-y:auto;transform:translate(-50%,112%);transition:transform 1.4s cubic-bezier(.2,.7,.2,1);
+  background:rgba(22,11,42,.74);-webkit-backdrop-filter:blur(16px);backdrop-filter:blur(16px);border:1px solid rgba(255,217,138,.35);border-bottom:0;border-radius:22px 22px 0 0;
+  padding:22px 26px calc(env(safe-area-inset-bottom,0px) + 22px);text-align:center;-webkit-user-select:text;user-select:text}
+#fin.show{transform:translate(-50%,0)}
+#fin h2{margin:0 0 8px;font-size:clamp(38px,10vw,52px);line-height:1.1;color:var(--star);font-weight:400}
+#letter p{margin:0 0 12px;font-style:italic;font-size:20px;line-height:1.55;color:var(--ink)}
+.hold{margin-top:10px}
+#promise{margin:6px 0 16px;padding:16px 18px;border:1px dashed rgba(255,217,138,.45);border-radius:14px}
+#promise .pt{margin:0 0 6px;font-size:34px;line-height:1.1;color:var(--rose)}
+#promise .pm{margin:0;font-style:italic;font-size:19px;line-height:1.55;text-align:left}
+#hb{position:relative;width:104px;height:104px;border:0;background:none;padding:0;cursor:pointer;color:var(--rose);touch-action:none;-webkit-user-select:none;user-select:none;-webkit-touch-callout:none}
+#hb svg.r{position:absolute;inset:0;transform:rotate(-90deg)}
+#hb .track{fill:none;stroke:rgba(255,255,255,.15);stroke-width:3}
+#ring{fill:none;stroke:var(--star);stroke-width:4;stroke-linecap:round;stroke-dasharray:276.46;stroke-dashoffset:276.46;filter:drop-shadow(0 0 6px var(--star))}
+#hb .h{position:absolute;inset:0;margin:auto;width:42px;height:42px;fill:currentColor;transition:transform .3s}
+#hb:active .h,#hb.hold .h{transform:scale(1.2)}
+#hb:focus-visible{outline:2px solid var(--star);outline-offset:4px;border-radius:50%}
+.hint{margin:6px 0 0;color:var(--soft);font-style:italic;font-size:18px}
+#sealed{display:none;animation:rise 1.2s both}
+#sealed .big{font-size:clamp(40px,11vw,58px);line-height:1.1;color:var(--rose);margin:0 0 6px}
+#sealed p:last-child{margin:0;font-style:italic;font-size:21px}
+@keyframes rise{from{opacity:0;transform:translateY(16px)}}
+#neb{position:fixed;inset:-20%;z-index:0;pointer-events:none;filter:blur(30px);background:radial-gradient(35% 30% at 30% 30%,rgba(255,110,170,.24),transparent),radial-gradient(40% 35% at 70% 65%,rgba(110,90,255,.26),transparent);animation:drift 40s ease-in-out infinite alternate}
+@keyframes drift{to{transform:translate(6%,4%) rotate(8deg) scale(1.1)}}
+#intro{position:fixed;inset:0;z-index:5;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:12px;text-align:center;padding:24px;background:radial-gradient(70% 50% at 50% 40%,#2a1450,#08040f);transition:opacity 1.6s}
+#intro.go{opacity:0;pointer-events:none}
+#intro .k{margin:0;font-style:italic;font-size:22px;color:var(--soft)}
+#intro h1{margin:0;font-size:clamp(76px,24vw,130px);line-height:1;color:var(--rose);font-weight:400;animation:glow 3s ease-in-out infinite alternate}
+@keyframes glow{from{text-shadow:0 0 24px rgba(255,143,176,.5)}to{text-shadow:0 0 64px rgba(255,143,176,.95),0 0 14px rgba(255,217,138,.6)}}
+#begin{margin-top:24px;font:inherit;font-style:italic;font-size:24px;color:var(--ink);background:rgba(255,255,255,.06);border:1px solid var(--star);padding:12px 38px;border-radius:40px;cursor:pointer;box-shadow:0 0 26px rgba(255,217,138,.35);animation:glow2 2.4s ease-in-out infinite alternate}
+@keyframes glow2{to{box-shadow:0 0 44px rgba(255,217,138,.65)}}
+#begin:focus-visible{outline:2px solid var(--star);outline-offset:4px}
+</style>
+</head>
+<body>
+<div id="neb" aria-hidden="true"></div>
+<canvas id="sky" aria-label="A night sky with twelve stars that form a heart"></canvas>
+<header id="top" class="script">for Irdyna</header>
+<div id="intro"><p class="k">my love, I made you a sky</p><h1 class="script">Irdyna</h1><p class="k">twelve stars, and each one holds something I want you to know</p><button id="begin">Begin</button><p class="k" style="font-size:17px;opacity:.65;margin-top:6px">turn your sound on</p></div>
+<div id="hud"><div id="dots"></div><p id="cap" aria-live="polite">Touch the glowing star</p></div>
+
+<section id="fin" aria-label="The full letter">
+  <h2 class="script">The constellation of us</h2>
+  <div id="letter"></div>
+  <div id="promise">
+    <p class="pt script">A promise, baby</p>
+    <p class="pm">baby sorry la i tak dapat jumpa you 19-21 nov ni macam yang kita plan dari awal. i dah try my best, tapi kereta i tak siap lagi bulan ni dan i pun tak expect langsung benda ni jadi. i tau you dah tunggu hari tu, i pun sama excited nak jumpa you. i harap you faham situation i sekarang dan jangan fikir yang bukan bukan. i promise dekat you, kereta dah siap je i terus datang jumpa you tak kira apa pun. terima kasih sebab sabar dengan i. i miss you sangat</p>
+  </div>
+  <div class="hold" id="holdBox">
+    <button id="hb" aria-label="Press and hold to promise another month">
+      <svg class="r" viewBox="0 0 100 100" aria-hidden="true"><circle class="track" cx="50" cy="50" r="44"/><circle id="ring" cx="50" cy="50" r="44"/></svg>
+      <svg class="h" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg>
+    </button>
+    <p class="hint">Press and hold to seal my promise</p>
+  </div>
+  <div id="sealed">
+    <p class="big script">Promise sealed.</p>
+    <p>I will come to you the moment my car is ready. Month two begins tonight, and I am yours in every one after it. Happy one month, my love.</p>
+  </div>
+</section>
+
+<script>
+(function(){
+  var $=function(i){return document.getElementById(i)};
+  var LINES=[
+    "Thirty days ago, my sky was quiet.",
+    "Then you arrived, and everything began to glow.",
+    "One message from you can change my entire mood.",
+    "A short call with you became the best part of my day.",
+    "I love the way you laugh. It is my favorite sound.",
+    "You care so gently, and it makes me braver.",
+    "Beside you, I am completely myself, and completely safe.",
+    "You turn ordinary days into small celebrations.",
+    "I will not promise a perfect love. I promise an honest one.",
+    "I will listen, I will try, and I will choose you again,",
+    "on the easy days, and on the hard ones.",
+    "So here is one month of us, written in the stars."
+  ];
+  var cv=$("sky"),cx=cv.getContext("2d"),W,H,DPR=Math.min(window.devicePixelRatio||1,2);
+  var reduce=window.matchMedia&&matchMedia("(prefers-reduced-motion: reduce)").matches;
+  var bg=[],stars=[],seg=[],parts=[],shoot=[],lit=0,fillA=0,nameA=0,closed=false,hold=0,holding=false,done=false;
+  for(var i=0;i<170;i++)bg.push({x:Math.random(),y:Math.random(),r:Math.random()*1.3+.25,ph:Math.random()*6.28,sp:.6+Math.random()*1.8});
+
+  function layout(){
+    W=window.innerWidth;H=window.innerHeight;
+    cv.width=W*DPR;cv.height=H*DPR;cv.style.width=W+"px";cv.style.height=H+"px";cx.setTransform(DPR,0,0,DPR,0,0);
+    var s=Math.min(W*.8/32,H*.32/30),ox=W/2,oy=H*.3-2.5*s;
+    stars=[];
+    for(var k=0;k<12;k++){
+      var t=Math.PI+k*Math.PI/6,
+          x=16*Math.pow(Math.sin(t),3),
+          y=13*Math.cos(t)-5*Math.cos(2*t)-2*Math.cos(3*t)-Math.cos(4*t);
+      stars.push({x:ox+x*s,y:oy-y*s});
+    }
+  }
+  layout();window.addEventListener("resize",layout);
+
+  var dots=$("dots");
+  for(var d=0;d<12;d++)dots.appendChild(document.createElement("i"));
+
+  function burst(x,y,n,spd,life){
+    for(var i=0;i<n;i++){
+      var a=Math.random()*6.283,v=(.4+Math.random())*spd;
+      parts.push({x:x,y:y,vx:Math.cos(a)*v,vy:Math.sin(a)*v,l:1,dl:1/(life||1.4)*(.7+Math.random()*.6),c:Math.random()<.35?"255,143,176":"255,217,138"});
+    }
+  }
+  function shootStar(){
+    var sx=W*(.3+Math.random()*.7),sy=-20;
+    shoot.push({x:sx,y:sy,vx:-(260+Math.random()*180),vy:200+Math.random()*120,l:1});
+  }
+  var cap=$("cap");
+  var tw;function say(txt){clearInterval(tw);cap.style.opacity=0;setTimeout(function(){cap.textContent='';cap.style.opacity=1;var i=0;tw=setInterval(function(){cap.textContent=txt.slice(0,++i);if(i>=txt.length)clearInterval(tw)},38)},350)}
+  var AC=null,SC=[392,440,523.25,587.33,659.25,783.99,880,1046.5,1174.66,1318.5,1568,1760];
+  function tone(f,d,v,ty){if(!AC)return;var o=AC.createOscillator(),g=AC.createGain(),t=AC.currentTime;o.type=ty||'sine';o.frequency.value=f;g.gain.setValueAtTime(0,t);g.gain.linearRampToValueAtTime(v||.12,t+.02);g.gain.exponentialRampToValueAtTime(.0001,t+d);o.connect(g);g.connect(AC.destination);o.start(t);o.stop(t+d+.05)}
+  function chime(k){var f=SC[k%12];tone(f,2.4,.13);tone(f*2,1.5,.04);tone(f/2,2.8,.05,'triangle')}
+  function swell(){[261.63,329.63,392,523.25,659.25,783.99].forEach(function(f,i){setTimeout(function(){tone(f,4.5,.09,'triangle');tone(f*2,3.5,.035)},i*170)})}
+  function heartBurst(x,y,sc){for(var i=0;i<80;i++){var t=i/80*6.283,hx=16*Math.pow(Math.sin(t),3),hy=-(13*Math.cos(t)-5*Math.cos(2*t)-2*Math.cos(3*t)-Math.cos(4*t));parts.push({x:x,y:y,vx:hx*sc,vy:hy*sc,l:1,dl:.5,c:'255,143,176'})}}
+  $('begin').addEventListener('click',function(){try{AC=new (window.AudioContext||window.webkitAudioContext)();if(AC.state==='suspended')AC.resume()}catch(e){}$('intro').className='go';tone(523.25,3,.08);setTimeout(function(){tone(783.99,3,.07)},320);setTimeout(shootStar,500);setTimeout(shootStar,1300);setTimeout(function(){say('Touch the glowing star')},1200)});
+
+  function light(k){
+    lit++;if(k>0)seg[k]=0;
+    burst(stars[k].x,stars[k].y,42,110,1.6);chime(k);if(navigator.vibrate)navigator.vibrate(18);
+    dots.children[k].className="on";
+    say(LINES[k]);
+    if(lit===12)setTimeout(finish,3600);
+  }
+  function finish(){
+    closed=true;seg[0]=0;swell();
+    $("hud").className="off";
+    shootStar();setTimeout(shootStar,500);setTimeout(shootStar,1100);
+    setTimeout(function(){$("fin").className="show"},1700);
+  }
+  window.addEventListener("pointerdown",function(e){
+    if(lit>=12||e.target.closest&&e.target.closest('#fin,#intro'))return;
+    var s=stars[lit];if(Math.hypot(e.clientX-s.x,e.clientY-s.y)<46)light(lit);
+  });
+
+  var L=$("letter");
+  [[0,4],[4,8],[8,12]].forEach(function(r){var p=document.createElement("p");p.textContent=LINES.slice(r[0],r[1]).join(" ");L.appendChild(p)});
+
+  var hb=$("hb"),ring=$("ring"),C=276.46;
+  function on(e){if(e)e.preventDefault();holding=true;hb.classList.add("hold")}
+  function off(){holding=false;hb.classList.remove("hold")}
+  hb.addEventListener("pointerdown",on);
+  ["pointerup","pointerleave","pointercancel"].forEach(function(n){hb.addEventListener(n,off)});
+  hb.addEventListener("contextmenu",function(e){e.preventDefault()});
+  hb.addEventListener("keydown",function(e){if(e.key===" "||e.key==="Enter")on(e)});
+  hb.addEventListener("keyup",function(e){if(e.key===" "||e.key==="Enter")off()});
+  function seal(){
+    done=true;off();
+    $("holdBox").style.display="none";$("sealed").style.display="block";
+    for(var i=0;i<9;i++)(function(i){setTimeout(function(){
+      burst(W*(.15+Math.random()*.7),H*(.08+Math.random()*.4),46,150,1.8);
+    },i*260)})(i);
+    for(var j=0;j<3;j++)setTimeout(shootStar,j*700);
+    swell();heartBurst(W/2,H*.3,8);setTimeout(function(){heartBurst(W*.22,H*.2,5)},600);setTimeout(function(){heartBurst(W*.78,H*.2,5)},1100);
+  }
+
+  var last=performance.now(),T=0;
+  function frame(now){
+    var dt=Math.min((now-last)/1000,.05);last=now;T+=dt;
+    cx.clearRect(0,0,W,H);
+
+    if(!done){
+      hold=holding?Math.min(hold+dt/1.8,1):Math.max(hold-dt/.6,0);
+      ring.style.strokeDashoffset=C*(1-hold);
+      if(hold>=1)seal();
+    }
+    if(!reduce&&Math.random()<dt/9&&H>0)shootStar();
+
+    for(var i=0;i<bg.length;i++){
+      var b=bg[i],a=reduce?.6:.25+.75*Math.pow(Math.sin(T*b.sp+b.ph),2);
+      cx.fillStyle="rgba(255,244,235,"+(a*.85).toFixed(3)+")";
+      cx.beginPath();cx.arc(b.x*W,b.y*H,b.r,0,6.283);cx.fill();
+    }
+
+    if(fillA>0){
+      cx.beginPath();
+      stars.forEach(function(s,k){k?cx.lineTo(s.x,s.y):cx.moveTo(s.x,s.y)});
+      cx.closePath();cx.fillStyle="rgba(255,143,176,"+fillA.toFixed(3)+")";cx.fill();
+    }
+    cx.lineCap="round";cx.lineWidth=1.6;cx.strokeStyle="rgba(255,217,138,.9)";cx.shadowColor="#ffd98a";cx.shadowBlur=10;
+    for(var k=0;k<12;k++){
+      if(seg[k]===undefined)continue;
+      if(seg[k]<1)seg[k]=Math.min(seg[k]+dt/.7,1);
+      var A=k===0?stars[11]:stars[k-1],B=k===0?stars[0]:stars[k],p=seg[k];
+      cx.beginPath();cx.moveTo(A.x,A.y);cx.lineTo(A.x+(B.x-A.x)*p,A.y+(B.y-A.y)*p);cx.stroke();
+    }
+    cx.shadowBlur=0;
+    if(closed&&seg[0]>=1)fillA=Math.min(fillA+dt*.08,.16);
+    if(fillA>0){nameA=Math.min(nameA+dt*.5,1);var mx=0,my=0;stars.forEach(function(s){mx+=s.x/12;my+=s.y/12});var bp=1+.045*Math.pow(Math.sin(T*3),2);cx.save();cx.globalAlpha=nameA;cx.textAlign='center';cx.textBaseline='middle';cx.fillStyle='#ffe7b0';cx.shadowColor='#ff8fb0';cx.shadowBlur=24;cx.font=Math.round(Math.min(W*.13,H*.075)*bp)+'px "Pinyon Script",cursive';cx.fillText('Irdyna',mx,my-H*.012);cx.restore()}
+
+    for(var n=0;n<12;n++){
+      var s=stars[n];
+      if(n<lit){
+        var g=cx.createRadialGradient(s.x,s.y,0,s.x,s.y,22+3*Math.sin(T*2+n));
+        g.addColorStop(0,"rgba(255,230,170,.9)");g.addColorStop(1,"rgba(255,217,138,0)");
+        cx.fillStyle=g;cx.beginPath();cx.arc(s.x,s.y,26,0,6.283);cx.fill();
+        cx.fillStyle="#fffaf0";cx.beginPath();cx.arc(s.x,s.y,3.6,0,6.283);cx.fill();
+      }else{
+        cx.fillStyle="rgba(185,166,255,.55)";cx.beginPath();cx.arc(s.x,s.y,2.6,0,6.283);cx.fill();
+        if(n===lit){
+          var q=(T*1.2)%1;
+          cx.strokeStyle="rgba(255,217,138,"+(1-q).toFixed(3)+")";cx.lineWidth=1.5;
+          cx.beginPath();cx.arc(s.x,s.y,8+q*22,0,6.283);cx.stroke();
+          cx.fillStyle="rgba(255,236,190,.95)";cx.beginPath();cx.arc(s.x,s.y,4.2+Math.sin(T*4),0,6.283);cx.fill();
+        }
+      }
+    }
+
+    for(var m=parts.length-1;m>=0;m--){
+      var q2=parts[m];q2.x+=q2.vx*dt;q2.y+=q2.vy*dt;q2.vx*=.985;q2.vy=q2.vy*.985+30*dt;q2.l-=q2.dl*dt;
+      if(q2.l<=0){parts.splice(m,1);continue}
+      cx.fillStyle="rgba("+q2.c+","+q2.l.toFixed(3)+")";cx.beginPath();cx.arc(q2.x,q2.y,1.8*q2.l+.4,0,6.283);cx.fill();
+    }
+    for(var z=shoot.length-1;z>=0;z--){
+      var o=shoot[z];o.x+=o.vx*dt;o.y+=o.vy*dt;o.l-=dt*.45;
+      if(o.l<=0||o.y>H+40){shoot.splice(z,1);continue}
+      var gr=cx.createLinearGradient(o.x,o.y,o.x-o.vx*.22,o.y-o.vy*.22);
+      gr.addColorStop(0,"rgba(255,244,220,"+Math.min(o.l,1).toFixed(2)+")");gr.addColorStop(1,"rgba(255,244,220,0)");
+      cx.strokeStyle=gr;cx.lineWidth=2;cx.beginPath();cx.moveTo(o.x,o.y);cx.lineTo(o.x-o.vx*.22,o.y-o.vy*.22);cx.stroke();
+    }
+    requestAnimationFrame(frame);
+  }
+  requestAnimationFrame(frame);
+})();
+</script>
+</body>
+</html>
